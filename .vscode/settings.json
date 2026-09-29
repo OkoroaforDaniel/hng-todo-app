@@ -1,0 +1,24 @@
+{
+  // Tell VS Code/Pylance to use this project's virtual environment, so imports
+  // like `fastapi` and `sqlalchemy` resolve instead of showing as problems.
+  "python.defaultInterpreterPath": "${workspaceFolder}/backend/.venv/bin/python",
+  "python.venvPath": "${workspaceFolder}/backend",
+
+  // The backend files are not a package, they import each other directly
+  // (`from database import Base`), so help the analyser find them.
+  "python.analysis.extraPaths": ["${workspaceFolder}/backend"],
+
+  // Run the backend tests from the Testing panel (the flask icon).
+  "python.testing.pytestEnabled": true,
+  "python.testing.unittestEnabled": false,
+  "python.testing.cwd": "${workspaceFolder}/backend",
+  "python.testing.pytestArgs": ["tests"],
+
+  // Keep the explorer tidy: generated folders are noise.
+  "files.exclude": {
+    "**/__pycache__": true,
+    "**/.pytest_cache": true,
+    "**/*.pyc": true,
+    "**/node_modules": true
+  }
+}

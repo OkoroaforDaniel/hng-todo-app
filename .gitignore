@@ -1,0 +1,16 @@
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# The SQLite database (your todos live here - no need to commit them)
+*.db
+*.db-journal
+
+# Node / Vite
+node_modules/
+dist/
+
+# macOS
+.DS_Store
