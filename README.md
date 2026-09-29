@@ -165,6 +165,49 @@ cd backend
 - Icons are hand-written inline SVG in `Icons.jsx`, so there is no icon library
   to install or keep up to date.
 
+## Deploy it (Vercel + Render + Neon)
+
+The React half goes on Vercel, the API on Render, and the data in a free Neon
+Postgres database. (Vercel cannot host the API with a SQLite file, because its
+serverless functions get a read-only filesystem that is thrown away after each
+request - the data has to live on the network.)
+
+**1. Database — Neon (neon.tech)**
+
+1. Create a project, then copy the **connection string** - it looks like
+   `postgresql://user:password@ep-xxx.us-east-2.aws.neon.tech/neondb?sslmode=require`
+2. Paste it where asked below, exactly as it is. The backend rewrites it to use
+   the `psycopg` driver for you.
+
+**2. API — Render (render.com)**
+
+1. **New +** → **Blueprint** → pick this repository. Render reads `render.yaml`
+   and creates a `todo-api` web service from the `backend` folder.
+2. It asks for the two secrets:
+   - `DATABASE_URL` → the Neon string from step 1
+   - `ALLOWED_ORIGINS` → leave empty for now (you can paste your Vercel address
+     here afterwards to lock the API down)
+3. When the deploy finishes, `https://<your-service>.onrender.com/api/health`
+   should answer `{"status": "ok"}`, and `/docs` gives you the API explorer.
+
+**3. Frontend — Vercel (vercel.com)**
+
+1. **Add New… → Project** → import this repository.
+2. Set **Root Directory** to `frontend`; Vercel then detects Vite by itself
+   (build `npm run build`, output `dist`).
+3. Add an environment variable: `VITE_API_BASE` = your Render address, e.g.
+   `https://todo-api-xxxx.onrender.com`
+4. Deploy, open the Vercel address, and add a task to prove the two halves are
+   talking to each other.
+
+Good to know:
+
+- Render's free tier sleeps after 15 minutes idle, so the first request after a
+  break takes ~30 seconds and then it is quick again.
+- `backend/todos.db` is only used on your machine. In the cloud everything lives
+  in Neon.
+- Every `git push` to `main` redeploys both halves automatically.
+
 ## Nice things to add later
 
 - Due dates and priorities on the cards

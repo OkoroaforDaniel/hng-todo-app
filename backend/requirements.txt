@@ -2,3 +2,7 @@ fastapi==0.141.1
 uvicorn[standard]==0.54.0
 sqlalchemy==2.1.1
 pydantic==2.13.5
+# Postgres driver, used when DATABASE_URL points at a hosted database (Neon).
+# The [binary] extra bundles libpq, so there is nothing else to install.
+psycopg[binary]==3.3.6
+

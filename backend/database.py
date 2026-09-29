@@ -20,6 +20,14 @@ DB_PATH = Path(os.getenv("TODO_DB_PATH", Path(__file__).resolve().parent / "todo
 # Turso/libSQL address, for example) and it is used instead.
 DATABASE_URL = os.getenv("DATABASE_URL", f"sqlite:///{DB_PATH}")
 
+# Neon, Render and friends hand out URLs starting with "postgres://" or
+# "postgresql://". SQLAlchemy needs to know which driver to use, so point those
+# at psycopg (the driver in requirements.txt) and you can paste them as they are.
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = "postgresql+psycopg://" + DATABASE_URL[len("postgres://") :]
+elif DATABASE_URL.startswith("postgresql://"):
+    DATABASE_URL = "postgresql+psycopg://" + DATABASE_URL[len("postgresql://") :]
+
 if DATABASE_URL.startswith("sqlite"):
     engine = create_engine(
         DATABASE_URL,

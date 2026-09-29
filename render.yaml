@@ -1,0 +1,21 @@
+# Render blueprint: lets Render set the API service up from this repo.
+# Dashboard: New + → Blueprint → pick this repo, then paste the two secrets.
+services:
+  - type: web
+    name: todo-api
+    runtime: python
+    plan: free
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.13.3"
+      # Your Neon connection string, pasted as Neon gives it to you.
+      - key: DATABASE_URL
+        sync: false
+      # The Vercel address of your frontend, e.g. https://my-app.vercel.app
+      # (leave it empty to allow any address - the API has no login to protect)
+      - key: ALLOWED_ORIGINS
+        sync: false

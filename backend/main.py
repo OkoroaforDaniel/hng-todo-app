@@ -62,7 +62,7 @@ ALLOWED_ORIGINS = [
     origin.strip()
     for origin in os.getenv("ALLOWED_ORIGINS", "*").split(",")
     if origin.strip()
-]
+] or ["*"]  # an empty setting means "no restriction", not "block everything"
 
 app.add_middleware(
     CORSMiddleware,
