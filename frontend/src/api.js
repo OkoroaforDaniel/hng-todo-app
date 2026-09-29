@@ -1,12 +1,16 @@
 /**
  * Every call to the FastAPI backend lives in this file.
  *
- * The paths start with "/api" and Vite forwards them to the backend for us
- * (see vite.config.js), so there is no server address to keep in sync here.
+ * In development the paths start with "/api" and Vite forwards them to the
+ * backend for us (see vite.config.js), so there is no address to configure.
+ * When the frontend is deployed somewhere the backend does not live (Vercel
+ * + another host, for example), set VITE_API_BASE to the backend's address.
  */
 
+const BASE_URL = (import.meta.env.VITE_API_BASE ?? "").replace(/\/$/, "");
+
 async function request(path, options = {}) {
-  const response = await fetch(path, {
+  const response = await fetch(`${BASE_URL}${path}`, {
     headers: { "Content-Type": "application/json" },
     ...options,
   });

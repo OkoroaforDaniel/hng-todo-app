@@ -116,6 +116,25 @@ Interactive docs (try any endpoint from the browser): http://127.0.0.1:8001/docs
 | PUT | `/api/todos/reorder` | new order — `{"ids": [3, 1, 2]}` (must list every id) |
 | GET | `/api/health` | is the backend awake? |
 
+## Configuration (environment variables)
+
+Everything has a sensible default, so you only need these when you deploy:
+
+| Variable | Used by | Default | What it does |
+| --- | --- | --- | --- |
+| `DATABASE_URL` | backend | `sqlite:///backend/todos.db` | Which database to use. Set it to a hosted Postgres/Turso address when deploying, because most hosts do not keep files between restarts. |
+| `TODO_DB_PATH` | backend | `backend/todos.db` | Where the local SQLite file lives (handy for tests). |
+| `ALLOWED_ORIGINS` | backend | `*` | Comma separated list of frontend addresses allowed to call the API. |
+| `VITE_API_BASE` | frontend | *empty* | The backend's address, when it is not on the same address as the frontend. |
+
+You set these in the hosting dashboard (Vercel/Render) or in front of the
+command, for example:
+
+```bash
+cd backend
+DATABASE_URL="postgresql+psycopg://user:secret@host/todos" uvicorn main:app --port 8001
+```
+
 ## Run the tests
 
 ```bash

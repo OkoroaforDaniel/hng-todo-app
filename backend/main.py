@@ -7,6 +7,7 @@ Run it from the backend folder with:
 Interactive API docs are then at http://127.0.0.1:8001/docs
 """
 
+import os
 from contextlib import asynccontextmanager
 
 from fastapi import Depends, FastAPI, HTTPException, status
@@ -32,8 +33,12 @@ def ensure_schema() -> None:
 
     `create_all` only creates *missing tables*, it never changes an existing
     one - so a database made before `created_at` existed needs the ALTER below.
+    That fix-up only applies to SQLite; other databases are created correctly.
     """
     Base.metadata.create_all(bind=engine)
+
+    if engine.dialect.name != "sqlite":
+        return
 
     with engine.begin() as connection:
         columns = {
@@ -50,11 +55,18 @@ def ensure_schema() -> None:
 
 app = FastAPI(title="Todo List API", version="1.0.0", lifespan=lifespan)
 
-# The React dev server runs on a different port, so the browser treats API
-# calls as cross-origin. Wide open is fine for a local learning project.
+# The React app runs on a different address to the API (another port in
+# development, another domain in production), so the browser treats the calls
+# as cross-origin. Set ALLOWED_ORIGINS - comma separated - to lock this down.
+ALLOWED_ORIGINS = [
+    origin.strip()
+    for origin in os.getenv("ALLOWED_ORIGINS", "*").split(",")
+    if origin.strip()
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=ALLOWED_ORIGINS,
     allow_methods=["*"],
     allow_headers=["*"],
 )
